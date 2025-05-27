@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Decision Tree Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .question-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="question-box" id="decisionBox">
+  <!-- Questions will appear here -->
+</div>
+
+<script>
+  // Define the decision tree
+  const decisionTree = {
+    question: "Do you like cats?",
+    yes: { result: "Buy a cat 🐱" },
+    no: {
+      question: "Do you like dogs?",
+      yes: { result: "Buy a dog 🐶" },
+      no: { result: "Buy a parrot 🦜" }
+    }
+  };
+
+  // Render the decision node
+  function renderNode(node) {
+    const box = document.getElementById("decisionBox");
+    box.innerHTML = "";
+
+    if (node.question) {
+      const qEl = document.createElement("p");
+      qEl.textContent = node.question;
+      box.appendChild(qEl);
+
+      const yesBtn = document.createElement("button");
+      yesBtn.textContent = "Yes";
+      yesBtn.onclick = () => renderNode(node.yes);
+      box.appendChild(yesBtn);
+
+      const noBtn = document.createElement("button");
+      noBtn.textContent = "No";
+      noBtn.onclick = () => renderNode(node.no);
+      box.appendChild(noBtn);
+    } else if (node.result) {
+      const resultEl = document.createElement("h3");
+      resultEl.textContent = node.result;
+      box.appendChild(resultEl);
+
+      const restartBtn = document.createElement("button");
+      restartBtn.textContent = "Start Over";
+      restartBtn.onclick = () => renderNode(decisionTree);
+      box.appendChild(restartBtn);
+    }
+  }
+
+  // Start with the root question
+  renderNode(decisionTree);
+</script>
+
+</body>
+</html>
