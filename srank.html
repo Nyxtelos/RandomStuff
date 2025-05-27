@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>S-Rank Agent Decision Guide</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card {
+      background: #fff;
+      border: 2px solid #0077cc;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #0077cc;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    .result {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .result img {
+      max-width: 100%;
+      margin-top: 15px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const images = {
+      "Get Lycaon": "https://static.wikia.nocookie.net/zenless-zone-zero/images/1/19/Lycaon_Icon.png",
+      "Get M1 Rina": "https://static.wikia.nocookie.net/zenless-zone-zero/images/e/e3/Rina_Icon.png",
+      "Get Rina M0": "https://static.wikia.nocookie.net/zenless-zone-zero/images/e/e3/Rina_Icon.png",
+      "Get M1 Lycaon": "https://static.wikia.nocookie.net/zenless-zone-zero/images/1/19/Lycaon_Icon.png",
+      "Get M2 Soldier 11": "https://static.wikia.nocookie.net/zenless-zone-zero/images/2/24/Soldier_11_Icon.png",
+      "Upgrade to M4 of said Agent": "https://static.wikia.nocookie.net/zenless-zone-zero/images/7/72/Nekomata_Icon.png",
+      "Get M1 Soldier 11": "https://static.wikia.nocookie.net/zenless-zone-zero/images/2/24/Soldier_11_Icon.png",
+      "Get MO Soldier 11": "https://static.wikia.nocookie.net/zenless-zone-zero/images/2/24/Soldier_11_Icon.png",
+      "Get M2 of said Agent": "https://static.wikia.nocookie.net/zenless-zone-zero/images/7/72/Nekomata_Icon.png",
+      "Get Soldier 11 or Nekomata": "https://static.wikia.nocookie.net/zenless-zone-zero/images/7/72/Nekomata_Icon.png",
+      "Get Koleda": "https://static.wikia.nocookie.net/zenless-zone-zero/images/4/4d/Koleda_Icon.png",
+      "Get Grace": "https://static.wikia.nocookie.net/zenless-zone-zero/images/5/5f/Grace_Icon.png",
+      "Get Rina": "https://static.wikia.nocookie.net/zenless-zone-zero/images/e/e3/Rina_Icon.png"
+    };
+
+    const tree = {
+      start: {
+        text: "Do you have an Ice DPS (Soukaku)?",
+        options: {
+          'Yes': { result: 'Get Lycaon' },
+          'No': 'q2',
+          'Yes + own Lycaon': 'q2'
+        }
+      },
+      q2: {
+        text: "Do you have MO Rina?",
+        options: {
+          'Yes': { result: 'Get M1 Rina' },
+          'I have M1 Rina': 'q3',
+          'No': 'q2_1'
+        }
+      },
+      q2_1: {
+        text: "Do you have Yanagi or build Anton/Harumasa?",
+        options: {
+          'Yes': { result: 'Get Rina M0' },
+          'No': 'q3'
+        }
+      },
+      q3: {
+        text: "Do you have MO Lycaon?",
+        options: {
+          'Yes + Ice DPS': { result: 'Get M1 Lycaon' },
+          'Yes, but no Ice DPS': 'q4'
+        }
+      },
+      q4: {
+        text: "Do you have M1 Soldier 11?",
+        options: {
+          'Yes, but I have Evelyn': 'q5',
+          'Yes': { result: 'Get M2 Soldier 11' },
+          'No': 'q5'
+        }
+      },
+      q5: {
+        text: "Do you have any Limited S-Ranks on M3?",
+        options: {
+          'Yes': { result: 'Upgrade to M4 of said Agent' },
+          'Yes, but I don\'t like the Agent': 'q6',
+          'No': 'q6'
+        }
+      },
+      q6: {
+        text: "Do you have MO Soldier 11?",
+        options: {
+          'Yes': { result: 'Get M1 Soldier 11' },
+          'No': { result: 'Get MO Soldier 11' },
+          'No, but I have Evelyn': 'q7'
+        }
+      },
+      q7: {
+        text: "Do you have any Limited S-Ranks on M1?",
+        options: {
+          'Yes': { result: 'Get M2 of said Agent' },
+          'No': 'q8',
+          'Yes, but I don\'t like the Agent': 'q8'
+        }
+      },
+      q8: {
+        text: "Do you lack an Attack Agent?",
+        options: {
+          'Yes': { result: 'Get Soldier 11 or Nekomata' },
+          'No': 'q9'
+        }
+      },
+      q9: {
+        text: "Do you lack a Stun Agent?",
+        options: {
+          'Yes': { result: 'Get Koleda' },
+          'No': 'q10'
+        }
+      },
+      q10: {
+        text: "Do you lack an Anomaly Agent?",
+        options: {
+          'Yes': { result: 'Get Grace' },
+          'No': { result: 'Get Rina' }
+        }
+      }
+    };
+
+    const qDiv = document.getElementById('question');
+    const optsDiv = document.getElementById('options');
+    const resDiv = document.getElementById('result');
+
+    function askQuestion(key) {
+      const q = tree[key];
+      qDiv.textContent = q.text;
+      optsDiv.innerHTML = '';
+      resDiv.innerHTML = '';
+      Object.entries(q.options).forEach(([label, next]) => {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.onclick = () => {
+          if (next.result) {
+            qDiv.textContent = '';
+            optsDiv.innerHTML = '';
+            resDiv.innerHTML = `${next.result}<br><img src="${images[next.result] || ''}" alt="${next.result}">`;
+          } else {
+            askQuestion(next);
+          }
+        };
+        optsDiv.appendChild(btn);
+      });
+    }
+
+    askQuestion('start');
+  </script>
+</body>
+</html>
